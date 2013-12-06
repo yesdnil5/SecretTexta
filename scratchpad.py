@@ -1,3 +1,5 @@
+#you'll need to change the path, but you can run an example using this code
+
 import numpy
 import os
 import string
@@ -12,6 +14,7 @@ edges = secretsanta.find_matches(edges)
 nodes = secretsanta.assign_matches(nodes,edges)
 secretsanta.print_matches(nodes)
 
+# just a simple example to show you how recarrays work.
 for i in range(len(nodes))
 	print nodes[i]['Name'] + ' has ' + nodes[nodes[i]['BuyGiftFor']]['Name']
 
