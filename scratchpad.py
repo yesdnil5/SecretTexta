@@ -4,12 +4,12 @@ import numpy
 import os
 import string
 
-os.chdir('C:\Britni\Code\secretsanta')
+os.chdir('C:\Britni\Code\SecretTexta')
 import secretsanta
 
 filename = 'inputdata.txt'
 nodes,edges = secretsanta.build_graph(filename)
-edges = secretsanta.exclude_edges(nodes['GroupNo'],edges)
+edges = secretsanta.exclude_edges(nodes,edges)
 edges = secretsanta.find_matches(edges)
 nodes = secretsanta.assign_matches(nodes,edges)
 secretsanta.print_matches(nodes)

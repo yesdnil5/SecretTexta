@@ -9,37 +9,36 @@ def build_graph(filename):
 	#open the file where data is stored
 	f = open(filename,'r')
 	
-	#count how many participants we have
-	nPeople = sum(1 for line in f)
-
-	#initalize the nodes of our graph
-	nodes = numpy.zeros(nPeople, dtype = [('Name','a10'),
-		('Number','a10'),('GroupNo',int),('BuyGiftFor',int)])
+	#make an empty list
+	nodes = [];
 
 	#fill in the data from our text file
-	f.seek(0,0)
-	i = 0
 	for curLine in f:
-		nodes[i]['Name'] = string.split(curLine)[0]
-		nodes[i]['Number'] = string.split(curLine)[1]
-		nodes[i]['GroupNo'] = int(string.split(curLine)[2])
-		i += 1
+		name = string.split(curLine)[0]
+		number = string.split(curLine)[1]
+		groupno = int(string.split(curLine)[2])
+		nodes = nodes + [{'Name':name, 'Number': number, 'GroupNo': groupno, 'Match': 0}]
+
 	#we start with every node connected to every other node, 
 	#including self-connections
-	edges = numpy.ones((nPeople,nPeople), dtype = numpy.int)
+	edges = numpy.ones((len(nodes),len(nodes)), dtype = numpy.int)
 
 	return nodes, edges
 
-def exclude_edges(groupIDs,edges):
+def exclude_edges(nodes,edges):
 	#removes edges from the graph based on group ID.  Any two nodes with
 	#the same group ID will not be connected.
 	
+	groupIDs = [];
+
 	#find all unique groups
+	for i in nodes:
+		groupIDs.append(i['GroupNo'])
 	groups = set(groupIDs)
 	
 	#for each group, remove the edges between them
 	for g in groups:
-		ingroup = (groupIDs == g)
+		ingroup = [id == g for id in groupIDs]
 		sz = sum(ingroup)
 		edges[numpy.ix_(ingroup,ingroup)] = numpy.zeros((sz,sz),dtype=int)
 
@@ -130,13 +129,13 @@ def assign_matches(nodes,edges):
 	# randomly pick a direction to traverse the hamiltonian path
 	child = poss[0]
 	# assign match
-	nodes[parent]['BuyGiftFor'] = child
+	nodes[parent]['Match'] = child
 
 	# traverse the path until we end up back at start
 	while child !=0: 
 		poss = numpy.arange(n)[edges[child]==1]
 		poss = poss[poss != parent]
-		nodes[child]['BuyGiftFor'] = poss[0]
+		nodes[child]['Match'] = poss[0]
 		parent = child
 		child = poss[0]
 	return nodes
@@ -146,4 +145,4 @@ def print_matches(nodes):
 	# mostly as an example of how the node structure works
 
 	for i in range(len(nodes)):
-		print nodes[i]['Name'] + ' has ' + nodes[nodes[i]['BuyGiftFor']]['Name']
+		print nodes[i]['Name'] + ' has ' + nodes[nodes[i]['Match']]['Name']
